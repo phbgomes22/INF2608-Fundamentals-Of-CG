@@ -29,7 +29,7 @@ class Triangulo:
         a02 = self.v2 - self.v0
         normal = Vector3.cross(a01, a02)
         
-        if Vector3.dot(direcao,normal) < -TOL:
+        if Vector3.dot(direcao,normal) > +TOL:
             return np.nan, self, Vector3.create(0,0,0)
         
         A = np.zeros((3,3), dtype=np.float64)
@@ -40,13 +40,13 @@ class Triangulo:
         
         b = origem - self.v0
         
-        try:
-            x = np.linalg.solve(A,b)
-        except np.linalg.LinAlg.Error as err:
-            return np.nan, self, Vector3.create(0,0,0)
+        x = np.linalg.solve(A,b)
         
-        ti, L1, L2 = x
-        if L1 < 0 or L1 > 1 or L2 < 0 or L2 > 1:
+        ti, L1, L2 = x[:]
+
+        L0 = 1 - L1 - L2
+
+        if L0 < 0 or L0 > 1 or L1 < 0 or L1 > 1 or L2 < 0 or L2 > 1:
             return np.nan, self, Vector3.create(0,0,0)
         
         self.L1 = L1

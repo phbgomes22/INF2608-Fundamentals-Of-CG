@@ -23,7 +23,7 @@ class Cena:
         for obj in self.objetos:
             obj.show()
         print("Luzes")
-        for luz in luzes:
+        for luz in self.luzes:
             luz.show()
 
             
@@ -78,7 +78,7 @@ class Cena:
     
     
     
-    def shade(self, obj, dir, pi, nx):
+    def shade(self, obj, dir, pi, ni):
         material = obj.get_material()
         kd = material.get_Kd()
         ks = material.get_Ks()
@@ -88,7 +88,7 @@ class Cena:
         cor = 0.05*kd
         
         dir_eye = - Vector3.unitary(dir)
-        refl = Vector3.reflect(dir_eye, nx) # r
+        refl = Vector3.reflect(dir_eye, ni) # r
         
         # direcao da luz
         for luz in self.luzes:
@@ -100,13 +100,13 @@ class Cena:
             val_luz_amb = 0.1*val_luz
             cor += val_luz_amb*kd
             
-            cos_teta = Vector3.dot(nx,dir_luz)
+            cos_teta = Vector3.dot(ni,dir_luz)
             
-            if cos_teta > 0:
+            if cos_teta >= 0:
                 cor += val_luz*kd*cos_teta 
                 cos_alfa = Vector3.dot(dir_luz, refl)
                 
-                if cos_alfa > 0:
+                if cos_alfa > 0 and cos_alfa < 1:
                     cor += val_luz*ks*(cos_alfa**ns)
         
         if ke > 0:
