@@ -10,7 +10,7 @@ from luz import *
 from objetos import *
 from material import *
 
-# 2:03
+# 01:20:16
 
 ## Criando camera
 
@@ -23,7 +23,7 @@ eye = Vector3.create(40,100,40)
 at = Vector3.create(0,0,0)
 up = Vector3.create(0,0,1)
 
-camera = Camera(90,230,230,30,230, eye, at, up, img360)
+camera = Camera(90,600,600,30,230, eye, at, up, img360)
 
 
 # - Instanciando cores
@@ -35,7 +35,7 @@ azul = Vector3.create(0.3, 0.3, 1)
 
 # criado o material da esfera e caixa
 mat_caixa = Material(amarelo, branco, 40, None, 0.0)
-mat_esfera = Material(azul, branco, 50, None, 0.0)
+mat_esfera = Material(azul, branco, 50, 'earth.jpg', 0.0)
 
 ## Criando esfera
 centro = np.array(Vector3.create(0,20,0))
@@ -64,7 +64,7 @@ luz = Luz(posicao_luz, branco)
 
 objetos_na_cena = []
 objetos_na_cena.append(esfera)
-objetos_na_cena.append(caixa1)
+#objetos_na_cena.append(caixa1)
 # objetos_na_cena.append(caixa2)
 
 cena = cn.Cena(camera, objetos_na_cena, [luz])

@@ -1,6 +1,7 @@
 import numpy as np
 import math
 from algebra import Vector3
+import matplotlib.pyplot as plt
 
 
 class Material:
@@ -12,11 +13,21 @@ class Material:
         self.Kd = Kd
         self.Ks = Ks
         self.ns = ns
-        self.textura = textura
         self.Ke = Ke
+
+        if textura is not None:
+            self.textura = plt.imread(textura)/255.0
+        else:
+            self.textura = None
         
         
-    def get_Kd(self):
+    def get_Kd(self, u, v):
+        if self.textura is not None:
+            h, w = self.textura.shape[:2]
+            y = int(v*h)
+            x = int(u*w)
+            return self.textura[y,x]
+
         return self.Kd
     
     def get_Ks(self):
@@ -27,3 +38,6 @@ class Material:
         
     def get_Ke(self):
         return self.Ke
+
+    def has_texture(self):
+        return self.textura is not None

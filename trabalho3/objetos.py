@@ -6,10 +6,15 @@ from material import *
 
 TOL = sys.float_info.epsilon
 
-#class Objeto: 
-#    def __init(self):
 
-class Triangulo:
+class Objeto:
+    def __init__(self):
+        pass
+
+    def get_uv(self, pi):
+        return 0,0
+
+class Triangulo(Objeto):
     
     # três vertices
     # e o material
@@ -62,9 +67,13 @@ class Triangulo:
     def get_material(self):
         return self.material
 
+    
+    def has_texture(self):
+        return self.material.has_texture()
 
 
-class Caixa:
+
+class Caixa(Objeto):
     def __init__(self,pmin,pmax,materiais):
         self.pmin = pmin
         self.pmax = pmax
@@ -109,6 +118,11 @@ class Caixa:
     def get_material(self):
         return self.material
 
+    
+    def has_texture(self):
+        return self.material.has_texture()
+
+
 class Esfera:
     
     # material é 
@@ -143,12 +157,26 @@ class Esfera:
             tmin = min(t1,t2)
             
             if tmin > TOL:
+              
+
                 return tmin, self, Vector3.unitary(origem + tmin*direcao - self.centro)
             else:
                 return np.nan, self, Vector3.create(0,0,0)
         
         return np.nan, self, Vector3.create(0,0,0)
         
+    def get_uv(self, pi):
+        pi -= self.centro
+        x, y, z = pi
+        phi = math.atan2(y,x) 
+
+        dist_orig = math.sqrt(x*x+ y*y)
+        theta = math.atan2(dist_orig, z)
+
+        u = (1+phi/math.pi)/2.0
+        v = theta/math.pi
+        return u, v
+
     # calcula a normal
     def normal(self, ponto):
         return Vector3.unitary(ponto-self.centro)
@@ -161,10 +189,13 @@ class Esfera:
     def get_material(self):
         return self.material
     
+    def has_texture(self):
+        return self.material.has_texture()
+    
 
     
     
-class Plano:
+class Plano(Objeto):
     def __init__(self,n,d, material):
         self.n = Vector3.unitary(n)
         self.d = d
@@ -184,11 +215,14 @@ class Plano:
     
     def get_material(self):
         return self.material
+
+    def has_texture(self):
+        return self.material.has_texture()
     
     
     
     
-class PoliConvexo:
+class PoliConvexo(Objeto):
     
     def __init__(self, planos):
         self.planos = planos
@@ -230,6 +264,10 @@ class PoliConvexo:
     
     def get_material(self):
         return self.plano_x.get_material()
+
+    
+    def has_texture(self):
+        return self.plano_x.has_texture()
         
     
 

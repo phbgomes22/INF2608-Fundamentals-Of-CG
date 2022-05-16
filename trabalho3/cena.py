@@ -80,7 +80,12 @@ class Cena:
     
     def shade(self, obj, dir, pi, ni):
         material = obj.get_material()
-        kd = material.get_Kd()
+
+        u = 0
+        v = 0
+        if obj.has_texture():
+            u, v = obj.get_uv(pi)
+        kd = material.get_Kd(u, v)
         ks = material.get_Ks()
         ns = material.get_ns()
         ke = material.get_Ke()
