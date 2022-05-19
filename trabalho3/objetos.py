@@ -4,7 +4,7 @@ from algebra import Vector3
 import sys
 from material import *
 
-TOL = sys.float_info.epsilon
+TOL = 0.0001 #sys.float_info.epsilon
 
 
 class Objeto:
@@ -18,11 +18,15 @@ class Triangulo(Objeto):
     
     # três vertices
     # e o material
-    def __init__(self, v0, v1, v2, material):
+    def __init__(self, v0, v1, v2, material, text0, text1, text2):
         self.v0 = v0
         self.v1 = v1
         self.v2 = v2
         self.material = material
+
+        self.text0 = text0
+        self.text1 = text1
+        self.text2 = text2
         
     def show(self):
         print(f'Triangulo: {self.v0}, {self.v1}, {self.v2}')
@@ -39,22 +43,28 @@ class Triangulo(Objeto):
         
         A = np.zeros((3,3), dtype=np.float64)
         
+        # monta o sistema de equações
         A[:,0] = -direcao
         A[:,1] = a01
         A[:,2] = a02
         
         b = origem - self.v0
         
+        # resolve para encontrar L0, L1 e L2 para checar se o ponto é interno ao triângulo
         x = np.linalg.solve(A,b)
         
         ti, L1, L2 = x[:]
 
         L0 = 1 - L1 - L2
 
+        # se L0, L1 ou L2 não forem entre 0 e 1, esse ponto encontrado na resolução do sistema de equações
+        # não faz parte do triângulo.
         if L0 < 0 or L0 > 1 or L1 < 0 or L1 > 1 or L2 < 0 or L2 > 1:
             return np.nan, self, Vector3.create(0,0,0)
         
-        self.L1 = L1
+        # guarda as coordenadas baricêntricas do ponto de interseção
+     
+        self.L1 = L1 
         self.L2 = L2
         self.normal = normal
         return ti, self, normal
@@ -70,6 +80,19 @@ class Triangulo(Objeto):
     
     def has_texture(self):
         return self.material.has_texture()
+
+
+    def get_uv(self, pi):
+        L0 = 1 - self.L1 - self.L2
+        # lembrando, um ponto interno vem da interpolação
+        # pi = o + ti*d
+        # pi = L0*p0 + L1*p1 + L2*p2 , se os 3 Ls estão entre 0 e 1 - isso é checado na func intercepta.
+        # sendo p0, p1 e p2 são os eixos do triângulo
+
+        # nesse caso, text0, text1 e text2 são as coordenadas da textura
+        u, v = L0*self.text0 + self.L1*self.text1 + self.L2*self.text2
+
+        return u, v
 
 
 
@@ -92,21 +115,21 @@ class Caixa(Objeto):
         v7 = Vector3.create(xm, yM, zM )
 
         text0 = np.array([0., 0.])
-        text1 = np.array([])
-        #tex
+        text1 = np.array([0., 1.])
+        text2 = np.array([1., 1.])
 
-        t0 = Triangulo(v0, v2, v1, materiais[0]) #, text0, text1, text2)
-        t2 = Triangulo(v0, v1, v5, materiais[0])
-        t3 = Triangulo(v0, v5, v4, materiais[1])
-        t1 = Triangulo(v0, v3, v2, materiais[1])
-        t4 = Triangulo(v1, v2, v6, materiais[2])
-        t5 = Triangulo(v1, v6, v5, materiais[2])
-        t6 = Triangulo(v2, v7, v6, materiais[3])
-        t7 = Triangulo(v2, v3, v7, materiais[3])
-        t8 = Triangulo(v3, v4, v7, materiais[4])
-        t9 = Triangulo(v3, v0, v4, materiais[4])
-        t10 = Triangulo(v4, v5, v6, materiais[5])
-        t11 = Triangulo(v4, v6, v7, materiais[5])
+        t0 = Triangulo(v0, v2, v1, materiais[0], text0, text1, text2)
+        t2 = Triangulo(v0, v1, v5, materiais[0], text0, text1, text2)
+        t3 = Triangulo(v0, v5, v4, materiais[1], text0, text1, text2)
+        t1 = Triangulo(v0, v3, v2, materiais[1], text0, text1, text2)
+        t4 = Triangulo(v1, v2, v6, materiais[2], text0, text1, text2)
+        t5 = Triangulo(v1, v6, v5, materiais[2], text0, text1, text2)
+        t6 = Triangulo(v2, v7, v6, materiais[3], text0, text1, text2)
+        t7 = Triangulo(v2, v3, v7, materiais[3], text0, text1, text2)
+        t8 = Triangulo(v3, v4, v7, materiais[4], text0, text1, text2)
+        t9 = Triangulo(v3, v0, v4, materiais[4], text0, text1, text2)
+        t10 = Triangulo(v4, v5, v6, materiais[5], text0, text1, text2)
+        t11 = Triangulo(v4, v6, v7, materiais[5], text0, text1, text2)
 
         self.triangulos = [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11]
 

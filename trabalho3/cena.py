@@ -28,7 +28,7 @@ class Cena:
 
             
     def render(self):
-        
+
         h, w = self.camera.get_resolution()
  
         for y in range(h):
@@ -36,20 +36,22 @@ class Cena:
                 # pega origem e raio
                 ori, dir = self.camera.raio(x,y)
                 
-                cor = self.trace(ori, dir)
+                cor = self.trace(None, ori, dir)
                 self.color_buffer[y,x,:] = np.clip(cor, 0, 1)
         
         return self.color_buffer
     
     
     
-    def trace(self, ori, dir):
+    def trace(self, obj_ori, ori, dir):
         ti = np.inf
         obji = None
         # vetor normal
         ni = Vector3.create(0,0,0)
         # rodo todos os objetos
         for obj in self.objetos:
+            if obj_ori == obj:
+                continue
             tx, objx, nx = obj.intercepta(ori, dir)
 
             if ~np.isnan(tx):
@@ -77,8 +79,18 @@ class Cena:
         return cor
     
     
+    def is_in_shadow(self, obi, ori, dir):
+        for obj in self.objetos:
+            if obj is not obi:
+                tx, objx, nx = obj.intercepta(ori, dir)
+                if tx > 0.0001 and tx < 1.0:
+                    return True
+        
+        return False
+
     
     def shade(self, obj, dir, pi, ni):
+
         material = obj.get_material()
 
         u = 0
@@ -97,8 +109,13 @@ class Cena:
         
         # direcao da luz
         for luz in self.luzes:
+
+            pi2luz = luz.get_posicao() - pi
+
+            if self.is_in_shadow(obj, pi, pi2luz):
+                continue
             
-            dir_luz = Vector3.unitary(luz.get_posicao() - pi) # L
+            dir_luz = Vector3.unitary(pi2luz) # L
             val_luz = luz.get_intensidade() # RGB
             
             val_luz_amb = 0.1*val_luz
@@ -114,8 +131,8 @@ class Cena:
                     cor += val_luz*ks*(cos_alfa**ns)
         
         if ke > 0:
-            cor_esp = self.trace(pi, refl)
-            cor_final = ke*cor_esp + (1-ke)*cor
+                cor_esp = self.trace(obj, pi, refl)
+                cor_final = ke*cor_esp + (1-ke)*cor
         else:
             cor_final = cor
             
