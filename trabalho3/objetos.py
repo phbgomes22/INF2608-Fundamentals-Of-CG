@@ -32,7 +32,7 @@ class Triangulo(Objeto):
         
         a01 = self.v1 - self.v0
         a02 = self.v2 - self.v0
-        normal = Vector3.cross(a01, a02)
+        normal = Vector3.unitary(Vector3.cross(a01, a02))
         
         if Vector3.dot(direcao,normal) > +TOL:
             return np.nan, self, Vector3.create(0,0,0)
@@ -91,7 +91,11 @@ class Caixa(Objeto):
         v6 = Vector3.create(xM, yM, zM)
         v7 = Vector3.create(xm, yM, zM )
 
-        t0 = Triangulo(v0, v2, v1, materiais[0])
+        text0 = np.array([0., 0.])
+        text1 = np.array([])
+        #tex
+
+        t0 = Triangulo(v0, v2, v1, materiais[0]) #, text0, text1, text2)
         t2 = Triangulo(v0, v1, v5, materiais[0])
         t3 = Triangulo(v0, v5, v4, materiais[1])
         t1 = Triangulo(v0, v3, v2, materiais[1])
@@ -121,6 +125,7 @@ class Caixa(Objeto):
     
     def has_texture(self):
         return self.material.has_texture()
+
 
 
 class Esfera:

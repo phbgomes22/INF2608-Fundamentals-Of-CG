@@ -98,8 +98,7 @@ class Cena:
         # direcao da luz
         for luz in self.luzes:
             
-            luz_p = luz.get_posicao() - pi
-            dir_luz = Vector3.unitary(luz_p) # L
+            dir_luz = Vector3.unitary(luz.get_posicao() - pi) # L
             val_luz = luz.get_intensidade() # RGB
             
             val_luz_amb = 0.1*val_luz
@@ -111,7 +110,7 @@ class Cena:
                 cor += val_luz*kd*cos_teta 
                 cos_alfa = Vector3.dot(dir_luz, refl)
                 
-                if cos_alfa > 0 and cos_alfa < 1:
+                if cos_alfa > 0: # and cos_alfa <= 1:
                     cor += val_luz*ks*(cos_alfa**ns)
         
         if ke > 0:
