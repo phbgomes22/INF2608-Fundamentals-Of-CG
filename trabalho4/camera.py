@@ -46,11 +46,24 @@ class Camera:
 
         # at -> posição que a camera está olhando, define o eixo z
         self.ze = Vector3.unitary(at-eye)# unitário da direção at - eye
-
         vectorXe = Vector3.cross(self.ze, up)
         self.xe = Vector3.unitary(vectorXe)
-
         self.ye = Vector3.cross(self.ze, self.xe)
+
+        T = Matrix4.translationMatrix(-eye[0], -eye[1], -eye[2])
+        R = Matrix4.changeBasisMatrix(self.xe, self.ye, self.ze)
+        self.lookat = R@T
+
+        
+        cot = 1/math.tan(math.radians(fov/2))
+        aspect = height/width
+
+        self.projection = np.array([
+            [aspect*cot, 0,0,0],
+            [0, cot, 0, 0],
+            [0, 0, (far + near)/(far - near), -(far*near)/(far - near)],
+            [0, 0, 1, 0]
+        ])
 
     
     def showConfigurations(self):
@@ -92,3 +105,11 @@ class Camera:
         self.xe = Vector3.unitary(vectorXe)
 
         self.ye = Vector3.cross(self.ze, self.xe)
+
+    def to_canvas(self, xn, yn, zn):
+        # x, y e z do canvas
+        xc = int( (self.width - 1)*(xn+1)/2 )
+        yc = int( (self.height - 1)*(yn+1)/2 )
+        zc = int( 4294967295*(zn + 1)/2 )
+
+        return xc, yc, zc
