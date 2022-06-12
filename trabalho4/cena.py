@@ -13,7 +13,11 @@ class Cena:
 
         img360 = self.camera.get_image()
         h, w = self.camera.get_resolution()
+        far = self.camera.get_far()
+
         self.color_buffer = np.zeros((h,w,3), dtype=np.float32)
+        max_int = np.iinfo(np.uint32).max
+        self.z_buffer = max_int*np.ones((h,w, 3), dtype=np.int32)
 
 
     def show(self):
@@ -27,6 +31,39 @@ class Cena:
             luz.show()
 
             
+    def glrender(self):
+        lookat = self.camera.get_lookat()
+        projection = self.camera.get_projection()
+        view = self.camera.get_view()
+
+        buffer = plt.imread('fig1.png')/255.
+        plt.imshow(buffer)
+        plt.show()
+        return
+        for obj in self.objetos:
+            triangles = obj.get_triangles()
+            for triangle in triangles:
+                vs = triangle.get_vertices()
+                ve = np.dot(vs, lookat.T)
+                vp = np.dot(ve, projection.T)
+
+                vpp = np.zeros((3,4))
+                for i in range(3):
+                    vpp[i] = vp[i]/vp[i,3]
+
+                vc = np.dot(vpp, view.T)
+
+                for i in range(3):
+                    xi = int(vc[i,0])
+                    yi = int(vc[i,1])
+                    buffer[yi, xi, 0] = 1.0
+                    buffer[yi, xi, 1] = 0.0
+                    buffer[yi, xi, 2] = 0.0
+
+        plt.imshow(buffer)
+        plt.show()
+
+
     def render(self):
 
         h, w = self.camera.get_resolution()
@@ -139,6 +176,8 @@ class Cena:
         return cor_final
  
         
+    def get_color_render(self):
+        return
 
     def move_camera(self, at):
         self.camera.look_at(at)

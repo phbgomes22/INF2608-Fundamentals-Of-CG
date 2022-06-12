@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from algebra import * 
 import math
 
+
+
 class Camera:
     """
     Objeto Câmera
@@ -80,6 +82,9 @@ class Camera:
     def get_resolution(self):
         return self.height, self.width
 
+    def get_far(self):
+        return self.far
+
     def get_image_resolution(self):
         return self.img360.get_resolution()
 
@@ -106,10 +111,19 @@ class Camera:
 
         self.ye = Vector3.cross(self.ze, self.xe)
 
-    def to_canvas(self, xn, yn, zn):
-        # x, y e z do canvas
-        xc = int( (self.width - 1)*(xn+1)/2 )
-        yc = int( (self.height - 1)*(yn+1)/2 )
-        zc = int( 4294967295*(zn + 1)/2 )
+    def get_lookat(self):
+        return self.lookat
+    
+    def get_projection(self):
+        return self.projection
 
-        return xc, yc, zc
+    def get_view(self):
+        max_int = np.iinfo(np.uint32).max
+        sx = (self.width-1)/2
+        sy = (self.height - 1)/2
+        sz = max_int/2
+        return np.array([
+            [sx, 0, 0, sx],
+            [0, sy, 0, sy],
+            [0, 0, sz, sz]
+        ])

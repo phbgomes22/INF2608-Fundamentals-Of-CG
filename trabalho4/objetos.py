@@ -11,6 +11,9 @@ class Objeto:
     def __init__(self):
         pass
 
+    def get_triangles(self):
+        return []
+
     def get_uv(self, pi):
         return 0,0
 
@@ -28,9 +31,16 @@ class Triangulo(Objeto):
         self.text1 = text1
         self.text2 = text2
         
+        
     def show(self):
         print(f'Triangulo: {self.v0}, {self.v1}, {self.v2}')
         self.material.show()
+
+    def get_vertices(self):
+        v0 = np.array([ self.v0[0], self.v0[1],  self.v0[2], 1])
+        v1 = np.array([ self.v1[0], self.v1[1],  self.v1[2], 1])
+        v2 = np.array([ self.v2[0], self.v2[1],  self.v2[2], 1])
+        return np.array([v0, v1, v2])
         
     def intercepta(self, origem, direcao):
         
@@ -133,6 +143,9 @@ class Caixa(Objeto):
 
         self.triangulos = [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11]
 
+
+    def get_triangles(self):
+        return self.triangulos
 
     def intercepta(self, origem, direcao):
         for triangulo in self.triangulos:
