@@ -33,7 +33,7 @@ azul = Vector3.create(0.3, 0.3, 1)
 
 # criado o material da esfera e caixa
 mat_caixa = Material(amarelo, branco, 40, 'formica.jpg', 0.0)
-mat_caixa2 = Material(amarelo, branco, 40, None, 0.0)
+mat_caixa2 = Material(amarelo, branco, 40, 'formica.jpg', 0.0)
 mat_esfera = Material(azul, branco, 50, 'terra.jpg', 0.0)
 
 ## Criando esfera
@@ -51,7 +51,7 @@ caixa1 = Caixa(pmin1, pmax1, [mat_caixa]*6)
 
 pmin2 = Vector3.create(-80.0, -50.0, -60.0)
 pmax2 = Vector3.create(50.0, 50.0, -50.0)
-caixa2 = Caixa(pmin2, pmax2, [mat_caixa]*6)
+caixa2 = Caixa(pmin2, pmax2, [mat_caixa2]*6)
 
 print("Caixa criada")
 
@@ -64,6 +64,8 @@ luz_capacete = Luz(eye, 0.3*branco)
 
 objetos_na_cena = []
 objetos_na_cena.append(caixa1)
+objetos_na_cena.append(caixa2)
+objetos_na_cena.append(esfera)
 
 cena = cn.Cena(camera, objetos_na_cena, [luz, luz_capacete])
 
@@ -72,16 +74,16 @@ print("Cena criada")
 
 ## Renderizando cena
  
-#buffer = cena.render()
+buffer = cena.render()
 
-cena.glrender()
+#cena.glrender()
 
 print("Cena renderizada")
 
 
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
-#plt.imshow(buffer)
+plt.imshow(buffer)
 
-#plt.show()
+plt.show()
 
